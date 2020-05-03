@@ -18,7 +18,7 @@ interface Product {
 
 interface CartContext {
   products: Product[];
-  addToCart(item: Product): void;
+  addToCart(item: Omit<Product, 'quantity'>): void;
   increment(id: string): void;
   decrement(id: string): void;
 }
@@ -58,10 +58,17 @@ const CartProvider: React.FC = ({ children }) => {
         product => product.id === newProduct.id,
       );
 
-      if (productIndex >= 0) {
-        cartProducts[productIndex].quantity += 1;
-      } else {
-        cartProducts = [...products, newProduct];
+      if (productIndex < 0) {
+        cartProducts = [
+          ...products,
+          {
+            id: newProduct.id,
+            image_url: newProduct.image_url,
+            price: newProduct.price,
+            title: newProduct.title,
+            quantity: 1,
+          },
+        ];
       }
 
       setProducts(cartProducts);
